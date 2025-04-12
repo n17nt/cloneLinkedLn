@@ -58,10 +58,53 @@ let createUser = async (req, res, next) => {
   }
 };
 
+let addUserSkill = async (req, res, next) => {
+  try {
+    let { id } = req.params;
+    let { skill_id } = req.body;
+    let result = await User.addSkillToUser(id, skill_id);
+
+    if (!result.rows.length) throw new Error("Failed to add skill");
+
+    res.status(200).json({ status: "Success", result: result.rows });
+  } catch (error) {
+    res.status(400).json({ status: "Failed", message: error.message });
+  }
+};
+
+let getUserSkills = async (req, res, next) => {
+  try {
+    let { id } = req.params;
+    let skills = await User.getUserSkills(id);
+
+    if (!skills.rows.length) throw new Error("No skills found");
+
+    res.status(200).json({ status: "Success", skills: skills.rows });
+  } catch (error) {
+    res.status(404).json({ status: "Failed", message: error.message });
+  }
+};
+
+let removeUserSkill = async (req, res, next) => {
+  try {
+    let { id, skillId } = req.params;
+    let result = await User.removeSkillFromUser(id, skillId);
+
+    if (!result.rows.length) throw new Error("Skill not found");
+
+    res.status(200).json({ status: "Success", result: result.rows });
+  } catch (error) {
+    res.status(404).json({ status: "Failed", message: error.message });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserByid,
   updateByID,
   deleteById,
   createUser,
+  addUserSkill,
+  getUserSkills,
+  removeUserSkill,
 };
