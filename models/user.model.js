@@ -13,9 +13,20 @@ let User = {
   },
   updateByID: function (params, body) {
     let field = Object.keys(params);
-    let name = body.name;
+
+    let name = body.body;
+    console.log(name);
     return pool.query(
-      `UPDATE users SET name=${name} where ${field}=${params[field]}`
+      `UPDATE users SET full_name='${name}' where id=${params[field]} RETURNING *`
+    );
+  },
+  deleteById: function (id) {
+    return pool.query("DELETE FROM users where id=$1 RETURNING *", [id]);
+  },
+  create: function (body) {
+    return pool.query(
+      "insert into users(email, password, full_name) values($1, $2, $3) RETURNING *",
+      [body.email, body.password, body.full_name]
     );
   },
 };
